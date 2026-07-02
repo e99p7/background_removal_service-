@@ -1,0 +1,9 @@
+services:
+  background-removal-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      MAX_IMAGE_MB: 10
+      MAX_IMAGE_SIDE: 4096
+      REMBG_MODEL: u2net

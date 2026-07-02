@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.pytest_cache/
+.coverage
+htmlcov/
+models/
+weights/
+data/
+*.onnx
+*.pth
+*.pt
+result.png
+.DS_Store
