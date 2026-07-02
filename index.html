@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Background Removal Service</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <div class="eyebrow">FastAPI + rembg</div>
+      <h1>Background Removal Service</h1>
+      <p>Upload a JPEG, PNG or WebP image. The service returns a transparent PNG.</p>
+
+      <form id="upload-form">
+        <input id="file-input" type="file" name="file" accept="image/png,image/jpeg,image/webp" required />
+        <button type="submit">Remove background</button>
+      </form>
+
+      <p id="status"></p>
+      <div class="preview" id="preview"></div>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const input = document.getElementById('file-input');
+    const statusText = document.getElementById('status');
+    const preview = document.getElementById('preview');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!input.files.length) return;
+
+      statusText.textContent = 'Processing...';
+      preview.innerHTML = '';
+
+      const formData = new FormData();
+      formData.append('file', input.files[0]);
+
+      try {
+        const response = await fetch('/remove-background', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'Request failed');
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        statusText.textContent = 'Done. You can preview or download the result.';
+        preview.innerHTML = `
+          <img src="${url}" alt="Background removed result" />
+          <a class="download" href="${url}" download="background_removed.png">Download PNG</a>
+        `;
+      } catch (error) {
+        statusText.textContent = error.message;
+      }
+    });
+  </script>
+</body>
+</html>
